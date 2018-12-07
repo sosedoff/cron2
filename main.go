@@ -6,13 +6,13 @@ import (
 )
 
 var (
-	configPath string
-	testConfig bool
+	configPath   string
+	validateOnly bool
 )
 
 func main() {
-	flag.StringVar(&configPath, "c", "", "Path to config file")
-	flag.BoolVar(&testConfig, "t", false, "Test config synax")
+	flag.StringVar(&configPath, "config", "", "Path to config file")
+	flag.BoolVar(&validateOnly, "validate", false, "Validate config syntax")
 	flag.Parse()
 
 	if configPath == "" {
@@ -25,7 +25,7 @@ func main() {
 	}
 
 	// Exit after config is validated
-	if testConfig {
+	if validateOnly {
 		return
 	}
 

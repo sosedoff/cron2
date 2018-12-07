@@ -10,6 +10,9 @@ import (
 )
 
 const (
+	// Default shell
+	defaultShell = "bash"
+
 	// Run modes
 	nativeMode = "native"
 	dockerMode = "docker"
@@ -31,7 +34,7 @@ type JobConfig struct {
 	Dir           string            `hcl:"dir"`      // Working dir
 	Environment   map[string]string `hcl:"env"`      // Env vars
 	Log           string            `hcl:"log"`      // Path to log file
-	BashMode      bool              `hcl:"bash"`     // Run in bash wrapper
+	Shell         string            `hcl:"shell"`    // Shell to use for the run
 	TimeoutString string            `hcl:"timeout"`  // Max execution time
 	Docker        *DockerConfig     `hcl:"docker"`   // Docker options
 	Notify        *NotifyConfig     `hcl:"notify"`   // Notification options
@@ -83,9 +86,9 @@ func (j *JobConfig) validate() error {
 		return errors.New("command is required")
 	}
 
-	// Automatically enable bash mode
-	if len(strings.Split(j.Command, "\n")) > 1 {
-		j.BashMode = true
+	// Configure shell when multi-line scripts
+	if j.Shell == "" && len(strings.Split(j.Command, "\n")) > 1 {
+		j.Shell = defaultShell
 	}
 
 	if _, err := cron.Parse(j.Spec); err != nil {

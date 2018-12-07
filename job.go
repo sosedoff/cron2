@@ -67,11 +67,8 @@ func runNative(j *Job) {
 	}
 
 	var cmd *exec.Cmd
-	if j.config.BashMode {
-		// When in bash mode we can write commands like this:
-		// curl http://example.com | jq | foobar
-		//
-		cmd = exec.CommandContext(ctx, "bash")
+	if j.config.Shell != "" {
+		cmd = exec.CommandContext(ctx, j.config.Shell)
 		cmd.Stdin = strings.NewReader(strings.TrimSpace(j.config.Command) + "\n")
 	} else {
 		chunks := strings.Split(j.config.Command, " ")

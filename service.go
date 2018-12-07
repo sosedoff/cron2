@@ -25,6 +25,11 @@ func (s *Service) addJobs() error {
 	}
 
 	for _, config := range s.config.Jobs {
+		if !config.Enabled {
+			log.Printf("job %q is not enabled, skipping\n", config.Name)
+			continue
+		}
+
 		log.Printf("adding job %q\n", config.Name)
 		_, err := s.scheduler.AddJob(config.fullSpec(), Job{config: config})
 		if err != nil {

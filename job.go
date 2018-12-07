@@ -124,8 +124,11 @@ func runNative(j *Job) {
 		}()
 	}
 
+	j.success = true
+
 	if err := cmd.Run(); err != nil {
 		j.success = false
+
 		if exiterr, ok := err.(*exec.ExitError); ok {
 			if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
 				j.exitStatus = status.ExitStatus()

@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/sosedoff/cron"
@@ -41,7 +42,7 @@ type JobConfig struct {
 
 // NotifyConfig represents job notification settings
 type NotifyConfig struct {
-	Mode string `hcl:"send"` // Mode could be one of "errors", "all"
+	Mode string `hcl:"on"` // Mode could be one of "errors", "all"
 
 	Webhook *struct {
 		URL string `hcl:"url"`
@@ -73,18 +74,17 @@ func (j *JobConfig) validate() error {
 		return errors.New("job must have a name")
 	}
 
-	if j.Command == "" {
-		return errors.New("command is required")
-	}
-
 	if j.Spec == "" {
 		return errors.New("spec is required")
 	}
 
-	if j.Docker != nil {
-		j.RunMode = dockerMode
-	} else {
-		j.RunMode = nativeMode
+	if j.Command == "" {
+		return errors.New("command is required")
+	}
+
+	// Automatically enable bash mode
+	if len(strings.Split(j.Command, "\n")) > 1 {
+		j.BashMode = true
 	}
 
 	if _, err := cron.Parse(j.Spec); err != nil {
@@ -97,6 +97,12 @@ func (j *JobConfig) validate() error {
 			return fmt.Errorf("invalid timeout: %v", err)
 		}
 		j.Timeout = dur
+	}
+
+	if j.Docker != nil {
+		j.RunMode = dockerMode
+	} else {
+		j.RunMode = nativeMode
 	}
 
 	// Notify on errors only by default

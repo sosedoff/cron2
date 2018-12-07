@@ -26,7 +26,7 @@ go get -u github.com/sosedoff/cron2
 
 ## Configuration
 
-Basic example
+Basic example:
 
 ```hcl
 // Simple job that runs every minute.
@@ -77,7 +77,7 @@ job "demo" {
   notify {
     // Configure delivery mode
     // Change to "all" to receive notifications for all runs
-    send = "error"
+    on = "error"
 
     webhook {
       // Will send POST to this URL
@@ -95,6 +95,34 @@ job "demo" {
       username = "cronbot"
     }
   }
+}
+```
+
+Bash mode:
+
+```hcl
+job "test" {
+  // Bash mode tells cron to run the command in bash wrapper.
+  bash = true
+
+  spec = "* * * * *"
+  command = "cat /my/file | grep foobar | xargs gzip --best"
+}
+```
+
+Inline scripts:
+
+```hcl
+job "inline" {
+  spec = "* * * * *"
+
+  // You can write multi line bash scripts like this:
+  command = <<END
+    # Dump your bash script in here
+    ls -al
+    echo "line1"
+    echo "line2"
+  END
 }
 ```
 

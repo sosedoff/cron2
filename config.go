@@ -17,6 +17,7 @@ var configKeys = []string{
 // jobKeys lists all allowed keys inside "job" block
 var jobKeys = []string{
 	"name",
+	"disabled",
 	"spec",
 	"command",
 	"env",
@@ -100,4 +101,14 @@ func readConfig(path string) (*Config, error) {
 	}
 
 	return config, nil
+}
+
+// findJob returns a job config that matches given name
+func (c *Config) findJob(name string) *JobConfig {
+	for _, j := range c.Jobs {
+		if j.Name == name {
+			return j
+		}
+	}
+	return nil
 }

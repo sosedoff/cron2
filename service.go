@@ -25,8 +25,8 @@ func (s *Service) addJobs() error {
 	}
 
 	for _, config := range s.config.Jobs {
-		if !config.Enabled {
-			log.Printf("job %q is not enabled, skipping\n", config.Name)
+		if config.Disabled {
+			log.Printf("job %q is disabled, skipping\n", config.Name)
 			continue
 		}
 

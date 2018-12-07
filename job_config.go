@@ -21,20 +21,20 @@ const (
 
 // JobConfig represents a single job in the configuration file
 type JobConfig struct {
-	ID            string            `hcl:"-"`       // Internal entry ID
-	Enabled       bool              `hcl:"enabled"` // Availability flag
-	Name          string            `hcl:"name"`    // Command name
-	Spec          string            `hcl:"spec"`    // Cron expression
-	Timezone      string            `hcl:"tz"`      // Time zone
-	Command       string            `hcl:"command"` // Run command
-	User          string            `hcl:"user"`    // Run as user
-	Dir           string            `hcl:"dir"`     // Working dir
-	Environment   map[string]string `hcl:"env"`     // Env vars
-	Log           string            `hcl:"log"`     // Path to log file
-	BashMode      bool              `hcl:"bash"`    // Run in bash wrapper
-	TimeoutString string            `hcl:"timeout"` // Max execution time
-	Docker        *DockerConfig     `hcl:"docker"`  // Docker options
-	Notify        *NotifyConfig     `hcl:"notify"`  // Notification options
+	ID            string            `hcl:"-"`        // Internal entry ID
+	Disabled      bool              `hcl:"disabled"` // Availability flag
+	Name          string            `hcl:"name"`     // Command name
+	Spec          string            `hcl:"spec"`     // Cron expression
+	Timezone      string            `hcl:"tz"`       // Time zone
+	Command       string            `hcl:"command"`  // Run command
+	User          string            `hcl:"user"`     // Run as user
+	Dir           string            `hcl:"dir"`      // Working dir
+	Environment   map[string]string `hcl:"env"`      // Env vars
+	Log           string            `hcl:"log"`      // Path to log file
+	BashMode      bool              `hcl:"bash"`     // Run in bash wrapper
+	TimeoutString string            `hcl:"timeout"`  // Max execution time
+	Docker        *DockerConfig     `hcl:"docker"`   // Docker options
+	Notify        *NotifyConfig     `hcl:"notify"`   // Notification options
 
 	// Computed fields
 	RunMode string        `hcl:"-"`

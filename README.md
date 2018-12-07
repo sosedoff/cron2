@@ -18,6 +18,12 @@ Cron2 is a job scheduling service similar to Cron
 Cron2 is created because i don't like standard Cron service that ships with most
 Linux boxes. Also, to mess around with HCL.
 
+## Install
+
+```
+go get -u github.com/sosedoff/cron2
+```
+
 ## Configuration
 
 Basic example

@@ -13,7 +13,7 @@ var (
 )
 
 func main() {
-	flag.StringVar(&configPath, "config", "", "Path to config file")
+	flag.StringVar(&configPath, "config", "/etc/cron2", "Path to config file")
 	flag.StringVar(&socketPath, "socket", "/var/run/cron2.sock", "Path to unix socket")
 	flag.BoolVar(&validateOnly, "validate", false, "Validate config syntax")
 	flag.StringVar(&triggerName, "trigger", "", "Trigger a job")

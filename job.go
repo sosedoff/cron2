@@ -26,10 +26,12 @@ type Job struct {
 	duration   time.Duration
 	success    bool
 	exitStatus int
+	running    bool
 }
 
 // Run executes the job
 func (j Job) Run() {
+	j.running = true
 	j.startedAt = time.Now()
 	log.Printf("[%s] job started\n", j.config.Name)
 
@@ -40,6 +42,7 @@ func (j Job) Run() {
 		runDocker(&j)
 	}
 
+	j.running = false
 	j.duration = time.Since(j.startedAt)
 	log.Printf(
 		"[%s] job finished with %d. success: %v, duration: %v,\n",
@@ -91,7 +94,7 @@ func runNative(j *Job) {
 	if j.config.User != "" {
 		usr, err := user.Lookup(j.config.User)
 		if err != nil {
-			log.Printf("[%s] cant find user %q: %v\n", j.config.User, err)
+			log.Printf("[%s] cant find user %q: %v\n", j.config.Name, j.config.User, err)
 			j.exitStatus = 1
 			j.success = false
 			return

@@ -27,6 +27,7 @@ var jobKeys = []string{
 	"bash",
 	"docker",
 	"timeout",
+	"notify",
 }
 
 // Config represents a service configuration

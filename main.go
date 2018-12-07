@@ -46,7 +46,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	go startFilewatcher(configPath)
+	go startFilewatcher(service, configPath)
 	go startListener(config, socketPath)
 
 	if err := service.start(); err != nil {

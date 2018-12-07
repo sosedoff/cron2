@@ -2,23 +2,33 @@ package main
 
 import (
 	"log"
+	"sync"
 
 	"gopkg.in/robfig/cron.v2"
 )
 
 type Service struct {
-	config    *Config
-	scheduler *cron.Cron
+	config     *Config
+	configLock *sync.Mutex
+	scheduler  *cron.Cron
 }
 
 func newService(config *Config) (*Service, error) {
 	return &Service{
-		config:    config,
-		scheduler: cron.New(),
+		config:     config,
+		configLock: new(sync.Mutex),
+		scheduler:  cron.New(),
 	}, nil
 }
 
 func (s *Service) addJobs() error {
+	s.configLock.Lock()
+	defer s.configLock.Unlock()
+
+	for _, e := range s.scheduler.Entries() {
+		s.scheduler.Remove(e.ID)
+	}
+
 	if len(s.config.Jobs) == 0 {
 		log.Println("no jobs found")
 		return nil
@@ -31,13 +41,21 @@ func (s *Service) addJobs() error {
 		}
 
 		log.Printf("adding job %q\n", config.Name)
-		_, err := s.scheduler.AddJob(config.fullSpec(), Job{config: config})
+		entry, err := s.scheduler.AddJob(config.fullSpec(), Job{config: config})
 		if err != nil {
 			return err
 		}
+		config.ID = int(entry)
 	}
 
 	return nil
+}
+
+func (s *Service) reload(config *Config) error {
+	s.configLock.Lock()
+	s.config = config
+	s.configLock.Unlock()
+	return s.addJobs()
 }
 
 func (s *Service) start() error {

@@ -6,8 +6,7 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-// TODO: actually reload config on any changes
-func startFilewatcher(path string) {
+func startFilewatcher(service *Service, path string) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Println("cant start filewatcher:", err)
@@ -27,7 +26,17 @@ func startFilewatcher(path string) {
 				return
 			}
 			if event.Op&fsnotify.Write == fsnotify.Write {
-				log.Println("modified file:", event.Name)
+				log.Println("config changed, reloading")
+
+				config, err := readConfig(path)
+				if err != nil {
+					log.Println("config error:", err)
+					continue
+				}
+				if err := service.reload(config); err != nil {
+					log.Println("reload error:", err)
+					continue
+				}
 			}
 		case err, ok := <-watcher.Errors:
 			if !ok {

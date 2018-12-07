@@ -24,7 +24,7 @@ const (
 
 // JobConfig represents a single job in the configuration file
 type JobConfig struct {
-	ID            string            `hcl:"-"`        // Internal entry ID
+	ID            int               `hcl:"-"`        // Internal entry ID
 	Disabled      bool              `hcl:"disabled"` // Availability flag
 	Name          string            `hcl:"name"`     // Command name
 	Spec          string            `hcl:"spec"`     // Cron expression

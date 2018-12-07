@@ -16,57 +16,78 @@ Cron2 is a job scheduling service similar to Cron
 ## Motivation
 
 Cron2 is created because i don't like standard Cron service that ships with most
-Linux boxes.
+Linux boxes. Also, to mess around with HCL.
 
 ## Configuration
 
-Configuration file is based on HCL syntax. See example:
+Basic example
 
 ```hcl
-// Simple job.
-// Runs every minute.
-job "test1" {
+// Simple job that runs every minute.
+job "simple" {
   spec = "* * * * *"
   command = "ping -c 1 google.com"
 }
+```
 
-// Periodic job with time zone. Default timezone is UTC.
-// Run at the beginning of hour, every 3 hours.
-job "test2" {
-  spec = "0 */3 * * *"
-  tz = "America/Chicago"
+Customize timezone:
+
+```hcl
+// Run command every day at 9am CST.
+// The default time zone is UTC.
+job "demp" {
+  spec = "0 9 * * *"
   command = "rake db:backup"
+  tz = "America/Chicago"
 }
+```
 
-// More job options
-job "test3" {
+More configuration options:
+
+```hcl
+job "demo" {
   spec = "0 9 * * *"
   command = "rake reports:generate"
+
+  // Specify user for the job
   user = "deploy"
+
+  // Change directory
   dir = "/home/deploy/app/current"
 
-  // Add extra environment variables to the job
+  // Custom log location
+  log = "/var/log/myjob.log"
+
+  // Configure environment variables
   env {
     RAILS_ENV = "production"
     DEBUG = "true"
   }
-}
-```
 
-Full configuration example:
+  // Configure max execution time
+  timeout = "30min"
 
-```hcl
-job "demo" {
-  spec = "0 * * * *"
-  command = "curl https://google.com | jq"
-  bash = true
-  tz = "America/Chicago"
-  user = "foo"
-  dir = "/home/foo"
-  timeout = "5s"
-  log = "/tmp/log/demo.log"
-  env {
-    FOO = "bar"
+  // Setup notifications
+  notify {
+    // Configure delivery mode
+    // Change to "all" to receive notifications for all runs
+    send = "error"
+
+    webhook {
+      // Will send POST to this URL
+      url = "https://mywebhook.com"
+    }
+
+    slack {
+      // Set to incoming webhook URL
+      url = "https://hooks.slack.com/services/..."
+
+      // Set channel (optional)
+      channel = "#ops"
+      
+      // Change username (optional)
+      username = "cronbot"
+    }
   }
 }
 ```

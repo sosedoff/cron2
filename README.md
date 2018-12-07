@@ -98,12 +98,12 @@ job "demo" {
 }
 ```
 
-Bash mode:
+Run with shell:
 
 ```hcl
 job "test" {
-  // Bash mode tells cron to run the command in bash wrapper.
-  bash = true
+  // Commands are not run in shell by default
+  shell = "bash"
 
   spec = "* * * * *"
   command = "cat /my/file | grep foobar | xargs gzip --best"
@@ -137,4 +137,34 @@ job "docker test" {
     image = "alpine:3.6"
   }
 }
+```
+
+### Testing jobs
+
+Let's look at the example config: the job is going to be executed at 9am every day.
+We want to test the job without having to change the spec.
+
+```hcl
+job "test" {
+  spec = "0 9 * * *"
+  tz = "America/Chicago"
+  command = "do something"
+}
+
+Start the service first:
+
+```
+cron2 -config=/config.hcl -socket=/var/run/cron2.sock
+```
+
+Once the service is running, trigger the job:
+
+```
+cron2 -socket=/var/run/cron2.sock -trigger=test
+```
+
+If the job exists you'll see success message:
+
+```
+ok: scheduled
 ```

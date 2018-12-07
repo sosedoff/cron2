@@ -2,6 +2,8 @@
 
 Cron2 is a job scheduling service similar to Cron
 
+*This is an experimental project - Please do not use in production*
+
 ## Features
 
 - Written in Go

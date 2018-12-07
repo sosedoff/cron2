@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
 
 	"gopkg.in/robfig/cron.v2"
 )
@@ -43,12 +42,6 @@ func (s *Service) start() error {
 
 	log.Println("starting scheduler")
 	defer log.Println("scheduler has stopped")
-
-	for _, j := range s.config.Jobs {
-		Job{config: j}.Run()
-	}
-
-	os.Exit(1)
 
 	s.scheduler.Start()
 	defer s.scheduler.Stop()

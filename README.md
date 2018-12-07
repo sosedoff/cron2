@@ -152,6 +152,7 @@ job "test" {
   tz = "America/Chicago"
   command = "do something"
 }
+```
 
 Start the service first:
 

@@ -5,14 +5,14 @@ import (
 	"net"
 )
 
-func triggerJob(socketPath string, job string) error {
+func listCurrentJobs(socketPath string) error {
 	conn, err := net.Dial("unix", socketPath)
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
 
-	if _, err := conn.Write([]byte("run " + job)); err != nil {
+	if _, err := conn.Write([]byte("list")); err != nil {
 		return err
 	}
 

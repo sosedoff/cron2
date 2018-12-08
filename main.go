@@ -10,6 +10,7 @@ var (
 	socketPath   string
 	validateOnly bool
 	triggerName  string
+	listJobs     bool
 )
 
 func main() {
@@ -17,11 +18,20 @@ func main() {
 	flag.StringVar(&socketPath, "socket", "/var/run/cron2.sock", "Path to unix socket")
 	flag.BoolVar(&validateOnly, "validate", false, "Validate config syntax")
 	flag.StringVar(&triggerName, "trigger", "", "Trigger a job")
+	flag.BoolVar(&listJobs, "list", false, "Show all jobs")
 	flag.Parse()
 
 	// Trigger a job from the command line
 	if triggerName != "" {
 		if err := triggerJob(socketPath, triggerName); err != nil {
+			log.Fatal(err)
+		}
+		return
+	}
+
+	// Show all configured jobs
+	if listJobs {
+		if err := listCurrentJobs(socketPath); err != nil {
 			log.Fatal(err)
 		}
 		return
@@ -47,7 +57,7 @@ func main() {
 	}
 
 	go startFilewatcher(service, configPath)
-	go startListener(config, socketPath)
+	go startListener(service, socketPath)
 
 	if err := service.start(); err != nil {
 		log.Fatal(err)

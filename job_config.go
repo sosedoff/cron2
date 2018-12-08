@@ -64,6 +64,14 @@ type DockerConfig struct {
 	Image string `hcl:"image"`
 }
 
+// state returns current job state
+func (j *JobConfig) state() string {
+	if j.Disabled {
+		return "inactive"
+	}
+	return "active"
+}
+
 // fullSpec returns cron spec with time zone
 func (j *JobConfig) fullSpec() string {
 	if j.Timezone != "" {

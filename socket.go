@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"os"
@@ -8,12 +9,13 @@ import (
 )
 
 var (
-	replyNoJob    = []byte("err: job name required")
-	replyNotFound = []byte("err: not found")
-	replyOk       = []byte("ok: scheduled")
+	replyInvalidCmd = []byte("err: invalid command")
+	replyNoJob      = []byte("err: job name required")
+	replyNotFound   = []byte("err: not found")
+	replyOk         = []byte("ok: scheduled")
 )
 
-func startListener(config *Config, path string) {
+func startListener(service *Service, path string) {
 	if path == "" {
 		return
 	}
@@ -49,21 +51,31 @@ func startListener(config *Config, path string) {
 			}
 
 			input := strings.TrimSpace(string(buf[0:n]))
-			if input == "" {
-				conn.Write(replyNoJob)
-				return
+			chunks := strings.Split(input, " ")
+
+			switch chunks[0] {
+			case "run":
+				if len(chunks) < 2 {
+					conn.Write(replyNoJob)
+					return
+				}
+				jobConfig := service.config.findJob(strings.Join(chunks[1:], " "))
+				if jobConfig == nil {
+					conn.Write(replyNotFound)
+					return
+				}
+				job := Job{config: jobConfig}
+				go job.Run()
+				conn.Write(replyOk)
+			case "list":
+				names := []string{}
+				for _, j := range service.config.Jobs {
+					names = append(names, fmt.Sprintf("%s: %s", j.Name, j.state()))
+				}
+				conn.Write([]byte(strings.Join(names, "\n")))
+			default:
+				conn.Write(replyInvalidCmd)
 			}
-
-			jobConfig := config.findJob(input)
-			if jobConfig == nil {
-				conn.Write(replyNotFound)
-				return
-			}
-
-			job := Job{config: jobConfig}
-			go job.Run()
-
-			conn.Write(replyOk)
 		}()
 	}
 }

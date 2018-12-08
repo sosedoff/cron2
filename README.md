@@ -171,3 +171,19 @@ If the job exists you'll see success message:
 ```
 ok: scheduled
 ```
+
+### List jobs
+
+You can see active jobs with:
+
+```
+cron2 -list
+```
+
+Output:
+
+```
+job1: active
+job2: active
+job3: inactive
+```

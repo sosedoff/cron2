@@ -11,6 +11,7 @@ var (
 	validateOnly bool
 	triggerName  string
 	listJobs     bool
+	reload       bool
 )
 
 func main() {
@@ -19,7 +20,15 @@ func main() {
 	flag.BoolVar(&validateOnly, "validate", false, "Validate config syntax")
 	flag.StringVar(&triggerName, "trigger", "", "Trigger a job")
 	flag.BoolVar(&listJobs, "list", false, "Show all jobs")
+	flag.BoolVar(&reload, "reload", false, "Reload config")
 	flag.Parse()
+
+	if reload {
+		if err := reloadConfig(socketPath); err != nil {
+			log.Fatal(err)
+		}
+		return
+	}
 
 	// Trigger a job from the command line
 	if triggerName != "" {
@@ -57,7 +66,12 @@ func main() {
 	}
 
 	go startFilewatcher(service, configPath)
-	go startListener(service, socketPath)
+
+	go func() {
+		if err := startListener(service, socketPath); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	if err := service.start(); err != nil {
 		log.Fatal(err)

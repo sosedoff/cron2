@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -15,17 +16,14 @@ var (
 	replyOk         = []byte("ok: scheduled")
 )
 
-func startListener(service *Service, path string) {
+func startListener(service *Service, path string) error {
 	if path == "" {
-		return
+		return errors.New("Socket path is required")
 	}
-
-	os.Remove(path)
 
 	listener, err := net.Listen("unix", path)
 	if err != nil {
-		log.Println("cant start server:", err)
-		return
+		return err
 	}
 	defer func() {
 		listener.Close()
@@ -78,4 +76,6 @@ func startListener(service *Service, path string) {
 			}
 		}()
 	}
+
+	return nil
 }

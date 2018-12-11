@@ -1,0 +1,13 @@
+[Unit]
+Description=Cron2
+After=network.target
+
+[Service]
+ExecStartPre=/usr/bin/cron2 -validate
+ExecStart=/usr/bin/cron2
+ExecReload=/usr/bin/cron2 -reload
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Alias=cron2.service

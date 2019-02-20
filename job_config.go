@@ -124,3 +124,13 @@ func (j *JobConfig) validate() error {
 
 	return nil
 }
+
+// nextRun returns the next expected execution time
+func (j *JobConfig) nextRun() (time.Time, error) {
+	var t time.Time
+	schedule, err := cron.Parse(j.fullSpec())
+	if err != nil {
+		return t, err
+	}
+	return schedule.Next(time.Now()), nil
+}

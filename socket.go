@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"strings"
+	"time"
 )
 
 var (
@@ -68,7 +69,12 @@ func startListener(service *Service, path string) error {
 			case "list":
 				names := []string{}
 				for _, j := range service.config.Jobs {
-					names = append(names, fmt.Sprintf("%s: %s", j.Name, j.state()))
+					next := "n/a"
+					nextTime, err := j.nextRun()
+					if err == nil {
+						next = nextTime.Format(time.RFC3339)
+					}
+					names = append(names, fmt.Sprintf("[%s] %s: %s %s -> next run at %s", j.state(), j.Name, j.Spec, j.Command, next))
 				}
 				conn.Write([]byte(strings.Join(names, "\n")))
 			default:

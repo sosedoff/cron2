@@ -1,3 +1,4 @@
 *.hcl
 *.sock
 cron2
+dist
